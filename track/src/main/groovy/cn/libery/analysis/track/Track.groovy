@@ -32,8 +32,9 @@ class Track implements Plugin<Project> {
         project.extensions.create('track', TrackExtension)
 
         project.dependencies {
-            //debugImplementation 'cn.libery.analysis:runtime:1.0.2'
             debugImplementation 'org.aspectj:aspectjrt:1.8.9'
+            debugImplementation 'cn.libery.analysis:runtime:1.1.0'
+            implementation 'cn.libery.analysis:annotation:1.1'
         }
 
         // add the versionName & versionCode to the apk file name
@@ -43,7 +44,7 @@ class Track implements Plugin<Project> {
                 log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")
                 return
             } else if (!project.track.enabled) {
-                log.debug("Hugo is not disabled.")
+                log.debug("track is not disabled.")
                 return
             }
 
@@ -93,7 +94,9 @@ class Track implements Plugin<Project> {
                     }
                 }
             }
+
         }
+
     }
 
 }
