@@ -40,7 +40,7 @@ group = "cn.libery.analysis"
 //发布到JCenter上的项目名字，必须填写
 def libName = "track"
 // 版本号，下次更新是只需要更改版本号即可
-version = "1.1.0"
+version = "1.1.1"
 
 def libDesc = ""
 

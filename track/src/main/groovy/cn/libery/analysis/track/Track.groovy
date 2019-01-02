@@ -33,7 +33,7 @@ class Track implements Plugin<Project> {
 
         project.dependencies {
             debugImplementation 'org.aspectj:aspectjrt:1.8.9'
-            debugImplementation 'cn.libery.analysis:runtime:1.1.0'
+            debugImplementation 'cn.libery.analysis:runtime:1.1.1'
             implementation 'cn.libery.analysis:annotation:1.1'
         }
 
