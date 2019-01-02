@@ -15,12 +15,11 @@ class MainActivity : AppCompatActivity() {
         greeter.sayHello()
     }
 
-    @Track
+    @Track(level = Log.DEBUG)
     private fun test() {
         val test = "123"
         Log.e("Main", test)
     }
-
 
     @Track
     internal class Greeter(private val name: String) {
@@ -29,4 +28,5 @@ class MainActivity : AppCompatActivity() {
             return "Hello, $name"
         }
     }
+
 }

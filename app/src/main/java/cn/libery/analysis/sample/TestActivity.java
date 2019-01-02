@@ -1,8 +1,11 @@
 package cn.libery.analysis.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import cn.libery.analysis.annotation.Track;
@@ -18,6 +21,14 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.start_main).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(TestActivity.this, MainActivity.class));
+            }
+        });
+
+
         Greeter greeter = new Greeter("Jake");
         Log.d("Greeting", greeter.sayHello());
 
@@ -27,7 +38,7 @@ public class TestActivity extends AppCompatActivity {
         startSleepyThread();
     }
 
-    @Track
+    @Track(level = Log.ERROR)
     static class Greeter {
         private final String name;
 
@@ -40,7 +51,7 @@ public class TestActivity extends AppCompatActivity {
         }
     }
 
-    @Track
+    @Track(level = Log.WARN)
     static class Charmer {
         private final String name;
 
@@ -48,12 +59,13 @@ public class TestActivity extends AppCompatActivity {
             this.name = name;
         }
 
+        @Track(level = Log.ERROR)
         public String askHowAreYou() {
             return "How are you " + name + "?";
         }
     }
 
-    @Track
+    @Track(level = Log.DEBUG)
     private void startSleepyThread() {
         new Thread(new Runnable() {
             private static final long SOME_POINTLESS_AMOUNT_OF_TIME = 50;
@@ -63,7 +75,7 @@ public class TestActivity extends AppCompatActivity {
                 sleepyMethod(SOME_POINTLESS_AMOUNT_OF_TIME);
             }
 
-            @Track
+            @Track(level = Log.INFO)
             private void sleepyMethod(long milliseconds) {
                 SystemClock.sleep(milliseconds);
             }

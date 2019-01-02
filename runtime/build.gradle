@@ -10,16 +10,13 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'org.aspectj:aspectjrt:1.8.9'
-    implementation 'cn.libery.analysis:annotation:1.0'
+    api project(':annotation')
 }
 
 android.libraryVariants.all { variant ->
@@ -45,14 +42,14 @@ android.libraryVariants.all { variant ->
                 case IMessage.ERROR:
                 case IMessage.FAIL:
                     log.error message.message, message.thrown
-                    break;
+                    break
                 case IMessage.WARNING:
                 case IMessage.INFO:
                     log.info message.message, message.thrown
-                    break;
+                    break
                 case IMessage.DEBUG:
                     log.debug message.message, message.thrown
-                    break;
+                    break
             }
         }
     }

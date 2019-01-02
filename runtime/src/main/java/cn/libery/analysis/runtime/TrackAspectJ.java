@@ -2,6 +2,7 @@ package cn.libery.analysis.runtime;
 
 import android.os.Looper;
 import android.util.Log;
+import cn.libery.analysis.annotation.Track;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -10,6 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,6 +48,7 @@ public class TrackAspectJ {
 
     @Around("method() || constructor() || withinActivityOnCreateClass()")
     public Object logAndExecute(ProceedingJoinPoint joinPoint) throws Throwable {
+
         enterMethod(joinPoint);
 
         long startNanos = System.nanoTime();
@@ -79,7 +82,49 @@ public class TrackAspectJ {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
         }
-        Log.v(asTag(cls), builder.toString());
+
+        printLog(joinPoint, cls, builder.toString());
+    }
+
+    private void printLog(ProceedingJoinPoint joinPoint, Class<?> cls, String msg) {
+        String tag = asTag(cls);
+        Signature signature = joinPoint.getSignature();
+        if (signature instanceof MethodSignature) {
+            MethodSignature methodSignature = (MethodSignature) signature;
+            try {
+                Method realMethod = joinPoint.getTarget().getClass().getDeclaredMethod(signature.getName(),
+                        methodSignature.getMethod()
+                                .getParameterTypes());
+                Track track = realMethod.getAnnotation(Track.class);
+                if (track == null) {
+                    Log.v(tag, msg);
+                    return;
+                }
+                switch (track.level()) {
+                    case Log.VERBOSE:
+                        Log.v(tag, msg);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(tag, msg);
+                        break;
+                    case Log.INFO:
+                        Log.i(tag, msg);
+                        break;
+                    case Log.WARN:
+                        Log.w(tag, msg);
+                        break;
+                    case Log.ERROR:
+                        Log.e(tag, msg);
+                        break;
+                    default:
+                        Log.v(tag, msg);
+                }
+            } catch (NoSuchMethodException e) {
+                Log.e(tag, e.getMessage() + " " + msg);
+            }
+        } else {
+            Log.v(tag, msg);
+        }
     }
 
     private void exitMethod(ProceedingJoinPoint joinPoint, Object result, long lengthMillis) {
@@ -102,7 +147,7 @@ public class TrackAspectJ {
             builder.append(Strings.toString(result));
         }
 
-        Log.v(asTag(cls), builder.toString());
+        printLog(joinPoint, cls, builder.toString());
     }
 
     private static String asTag(Class<?> cls) {
