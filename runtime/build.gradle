@@ -5,8 +5,8 @@ import org.aspectj.tools.ajc.Main
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
 
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
@@ -70,7 +70,7 @@ group = "cn.libery.analysis"
 //发布到JCenter上的项目名字，必须填写
 def libName = "track-runtime"
 // 版本号，下次更新是只需要更改版本号即可
-version = "1.1.1"
+version = "1.2.1"
 
 def libDesc = ""
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import cn.libery.analysis.annotation.Track;
@@ -14,20 +13,13 @@ import cn.libery.analysis.annotation.Track;
  * @author shizhiqiang on 2019/1/2.
  * @description
  */
-public class TestActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        findViewById(R.id.start_main).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(TestActivity.this, MainActivity.class));
-            }
-        });
-
+        findViewById(R.id.start_main).setOnClickListener(this);
 
         Greeter greeter = new Greeter("Jake");
         Log.d("Greeting", greeter.sayHello());
@@ -36,6 +28,42 @@ public class TestActivity extends AppCompatActivity {
         Log.d("Charming", charmer.askHowAreYou());
 
         startSleepyThread();
+        test("0988");
+        test3("23");
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public void test2(int i) {
+        System.out.println(i);
+    }
+
+    private void test(String s) {
+        System.out.println(s);
+    }
+
+    protected void test3(String s) {
+        System.out.println(s);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.start_main:
+                test2(2);
+                startActivity(new Intent(TestActivity.this, MainActivity.class));
+                break;
+            default:
+        }
     }
 
     @Track(level = Log.ERROR)

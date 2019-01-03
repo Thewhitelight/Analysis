@@ -17,6 +17,7 @@ class Track implements Plugin<Project> {
 
         def hasApp = project.plugins.withType(AppPlugin)
         def hasLib = project.plugins.withType(LibraryPlugin)
+
         if (!hasApp && !hasLib) {
             throw new IllegalStateException("'android' or 'android-library' plugin required.")
         }
@@ -33,12 +34,15 @@ class Track implements Plugin<Project> {
 
         project.dependencies {
             debugImplementation 'org.aspectj:aspectjrt:1.8.9'
-            debugImplementation 'cn.libery.analysis:runtime:1.1.1'
-            implementation 'cn.libery.analysis:annotation:1.1'
+            /* debugImplementation 'cn.libery.analysis:runtime:1.1.1'
+             implementation 'cn.libery.analysis:annotation:1.1'*/
         }
 
         // add the versionName & versionCode to the apk file name
         variants.all { variant ->
+
+            def applicationId = [variant.mergedFlavor.applicationId, variant.buildType.applicationIdSuffix].findAll().join()
+            println applicationId
 
             if (!variant.buildType.isDebuggable()) {
                 log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")

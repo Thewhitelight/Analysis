@@ -3,8 +3,10 @@ package cn.libery.analysis.runtime;
 import android.os.Looper;
 import android.util.Log;
 import cn.libery.analysis.annotation.Track;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -20,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 public class TrackAspectJ {
+
+    public static final String PACKAGE_NAME = "";
 
     @Pointcut("within(@cn.libery.analysis.annotation.Track *)")
     public void withinAnnotatedClass() {
@@ -44,6 +48,44 @@ public class TrackAspectJ {
 
     @Pointcut("execution(@cn.libery.analysis.annotation.Track *.new(..)) || constructorInsideAnnotatedType()")
     public void constructor() {
+    }
+
+    @Pointcut("execution(* " + PACKAGE_NAME + "..*.*(..))")
+    public void allTargetMethod() {
+    }
+
+    @After("allTargetMethod()")
+    public void afterLogAndExecute(JoinPoint joinPoint) {
+        if (joinPoint != null) {
+            Signature signature = joinPoint.getSignature();
+            if (signature instanceof CodeSignature) {
+                CodeSignature codeSignature = (CodeSignature) signature;
+                Class<?> cls = signature.getDeclaringType();
+                String methodName = signature.getName();
+
+                String[] parameterNames = codeSignature.getParameterNames();
+                Object[] parameterValues = joinPoint.getArgs();
+
+                StringBuilder builder = new StringBuilder();
+                builder.append(methodName).append('(');
+                for (int i = 0; i < parameterValues.length; i++) {
+                    if (i > 0) {
+                        builder.append(", ");
+                    }
+                    builder.append(parameterNames[i]).append('=');
+                    builder.append(Strings.toString(parameterValues[i]));
+                }
+                builder.append(')');
+
+                if (Looper.myLooper() != Looper.getMainLooper()) {
+                    builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
+                }
+
+                final int lineNumber = joinPoint.getSourceLocation().getLine() - 1;
+                Log.d(asTag(cls) + "-" + methodName + " " + lineNumber, builder.toString());
+            }
+        }
+
     }
 
     @Around("method() || constructor() || withinActivityOnCreateClass()")
@@ -81,6 +123,29 @@ public class TrackAspectJ {
 
         if (Looper.myLooper() != Looper.getMainLooper()) {
             builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
+        }
+
+        printLog(joinPoint, cls, builder.toString());
+    }
+
+    private void exitMethod(ProceedingJoinPoint joinPoint, Object result, long lengthMillis) {
+
+        Signature signature = joinPoint.getSignature();
+
+        Class<?> cls = signature.getDeclaringType();
+        String methodName = signature.getName();
+        boolean hasReturnType = signature instanceof MethodSignature
+                && ((MethodSignature) signature).getReturnType() != void.class;
+
+        StringBuilder builder = new StringBuilder("\u21E0 ")
+                .append(methodName)
+                .append(" [")
+                .append(lengthMillis)
+                .append("ms]");
+
+        if (hasReturnType) {
+            builder.append(" = ");
+            builder.append(Strings.toString(result));
         }
 
         printLog(joinPoint, cls, builder.toString());
@@ -125,29 +190,6 @@ public class TrackAspectJ {
         } else {
             Log.v(tag, msg);
         }
-    }
-
-    private void exitMethod(ProceedingJoinPoint joinPoint, Object result, long lengthMillis) {
-
-        Signature signature = joinPoint.getSignature();
-
-        Class<?> cls = signature.getDeclaringType();
-        String methodName = signature.getName();
-        boolean hasReturnType = signature instanceof MethodSignature
-                && ((MethodSignature) signature).getReturnType() != void.class;
-
-        StringBuilder builder = new StringBuilder("\u21E0 ")
-                .append(methodName)
-                .append(" [")
-                .append(lengthMillis)
-                .append("ms]");
-
-        if (hasReturnType) {
-            builder.append(" = ");
-            builder.append(Strings.toString(result));
-        }
-
-        printLog(joinPoint, cls, builder.toString());
     }
 
     private static String asTag(Class<?> cls) {
