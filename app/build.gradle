@@ -15,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        flavorDimensions "1.0"
     }
     buildTypes {
         release {
@@ -23,8 +24,13 @@ android {
         }
     }
 
-    track {
-        enabled true
+//    track {
+//        enabled true
+//    }
+
+    productFlavors {
+        dev {}
+        product{}
     }
 }
 
@@ -36,6 +42,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    implementation project(path: ':runtime')
-    implementation 'cn.libery.analysis:annotation:1.1'
+    debugImplementation project(path: ':runtime')
 }

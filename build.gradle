@@ -17,8 +17,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.aspectj:aspectjtools:1.8.9'
-        classpath 'cn.libery:track:1.0.0'
-
+        //classpath 'cn.libery:track:1.0.0'
+        classpath 'cn.libery.analysis:track:1.1.4'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }

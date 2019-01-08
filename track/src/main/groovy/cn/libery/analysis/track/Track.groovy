@@ -34,15 +34,11 @@ class Track implements Plugin<Project> {
 
         project.dependencies {
             debugImplementation 'org.aspectj:aspectjrt:1.8.9'
-            /* debugImplementation 'cn.libery.analysis:runtime:1.1.1'
-             implementation 'cn.libery.analysis:annotation:1.1'*/
+            implementation 'cn.libery.analysis:annotation:1.1'
         }
 
         // add the versionName & versionCode to the apk file name
         variants.all { variant ->
-
-            def applicationId = [variant.mergedFlavor.applicationId, variant.buildType.applicationIdSuffix].findAll().join()
-            println applicationId
 
             if (!variant.buildType.isDebuggable()) {
                 log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")
@@ -56,6 +52,8 @@ class Track implements Plugin<Project> {
             variant.name.tokenize('-').eachWithIndex { token, index ->
                 fullName = fullName + (index == 0 ? token : token.capitalize())
             }
+
+            println("track:" + fullName)
 
             JavaCompile javaCompile = variant.javaCompiler
             MessageHandler handler = new MessageHandler(true)

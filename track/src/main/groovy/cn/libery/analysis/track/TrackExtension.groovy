@@ -12,14 +12,4 @@ class TrackExtension {
         this.enabled = enabled
     }
 
-    def trackAllMethod
-
-    def getTrackAllMethod() {
-        return trackAllMethod
-    }
-
-    void setTrackAllMethod(trackAllMethod) {
-        this.trackAllMethod = trackAllMethod
-    }
-
 }

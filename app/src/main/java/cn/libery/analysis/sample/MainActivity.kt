@@ -16,9 +16,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Track(level = Log.DEBUG)
-    private fun test() {
+    private fun test(): String {
         val test = "123"
         Log.e("Main", test)
+        return test
     }
 
     @Track

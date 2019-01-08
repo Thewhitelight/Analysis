@@ -6,12 +6,13 @@ import cn.libery.analysis.annotation.Track;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.lang.reflect.SourceLocation;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +23,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 public class TrackAspectJ {
-
-    public static final String PACKAGE_NAME = "";
 
     @Pointcut("within(@cn.libery.analysis.annotation.Track *)")
     public void withinAnnotatedClass() {
@@ -50,14 +49,26 @@ public class TrackAspectJ {
     public void constructor() {
     }
 
-    @Pointcut("execution(* " + PACKAGE_NAME + "..*.*(..))")
+    /*@Pointcut("!execution(* com.janmart.jianmate.zxing..*.*(..))")
+    public void excludeClass() {
+    }*/
+
+    @Pointcut("execution(* " + BuildConfig.PACKAGE_NAME + "..*.*(..))"/* && excludeClass()"*/)
     public void allTargetMethod() {
     }
 
-    @After("allTargetMethod()")
-    public void afterLogAndExecute(JoinPoint joinPoint) {
+    @Before("allTargetMethod()")
+    public void beforeLogAndExecute(JoinPoint joinPoint) {
         if (joinPoint != null) {
             Signature signature = joinPoint.getSignature();
+            int lineNumber = 0;
+            SourceLocation sourceLocation = joinPoint.getSourceLocation();
+            if (sourceLocation != null) {
+                lineNumber = sourceLocation.getLine() - 1;
+            }
+            if (lineNumber == 0) {
+                return;
+            }
             if (signature instanceof CodeSignature) {
                 CodeSignature codeSignature = (CodeSignature) signature;
                 Class<?> cls = signature.getDeclaringType();
@@ -81,8 +92,7 @@ public class TrackAspectJ {
                     builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
                 }
 
-                final int lineNumber = joinPoint.getSourceLocation().getLine() - 1;
-                Log.d(asTag(cls) + "-" + methodName + " " + lineNumber, builder.toString());
+                Log.d("Track " + lineNumber + " " + asTag(cls) + "-" + methodName, builder.toString());
             }
         }
 
