@@ -1,13 +1,16 @@
 package cn.libery.analysis.sample;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import cn.libery.analysis.annotation.Track;
+import cn.libery.analysis.sample.test.Logger3;
+import cn.libery.analysis.sample.test.Logger4;
 
 /**
  * @author shizhiqiang on 2019/1/2.
@@ -18,18 +21,30 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("TestActivity", "onCreate");
         setContentView(R.layout.activity_main);
         findViewById(R.id.start_main).setOnClickListener(this);
 
+        startSleepyThread();
+
+        test("0988");
+
+        test3("23");
+
         Greeter greeter = new Greeter("Jake");
-        Log.d("Greeting", greeter.sayHello());
+        String hello = greeter.sayHello();
+        Log.d("Greeting", hello);
 
         Charmer charmer = new Charmer("Jake");
-        Log.d("Charming", charmer.askHowAreYou());
+        String ok = charmer.askHowAreYou();
+        String name = modifyCharmer(charmer).name;
+        Log.d("Charming", ok);
+        Log.d("CharmingName", name);
 
-        startSleepyThread();
-        test("0988");
-        test3("23");
+        Logger.log("logger", "test");
+        Logger2.log("logger2", "test");
+        Logger3.log("logger3", "test");
+        Logger4.log("logger4", "test");
     }
 
 
@@ -43,7 +58,12 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
     }
 
-    public void test2(int i) {
+    private Charmer modifyCharmer(Charmer c) {
+        c.name = "Mac";
+        return c;
+    }
+
+    public void test2(int i, int t) {
         System.out.println(i);
     }
 
@@ -59,14 +79,21 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.start_main:
-                test2(2);
+                AlertDialog.Builder builder = new AlertDialog.Builder(TestActivity.this);
+                builder.setTitle("alert").setPositiveButton("close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+                test2(2, 3);
                 startActivity(new Intent(TestActivity.this, MainActivity.class));
                 break;
             default:
         }
     }
 
-    @Track(level = Log.ERROR)
     static class Greeter {
         private final String name;
 
@@ -79,31 +106,30 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Track(level = Log.WARN)
     static class Charmer {
-        private final String name;
+        private String name;
 
         private Charmer(String name) {
             this.name = name;
         }
 
-        @Track(level = Log.ERROR)
         public String askHowAreYou() {
             return "How are you " + name + "?";
         }
     }
 
-    @Track(level = Log.DEBUG)
     private void startSleepyThread() {
         new Thread(new Runnable() {
             private static final long SOME_POINTLESS_AMOUNT_OF_TIME = 50;
 
             @Override
             public void run() {
+                int length = Thread.currentThread().getStackTrace().length;
+                StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[length - 1];
+                Log.e("tag2", stackTraceElement.toString() + length);
                 sleepyMethod(SOME_POINTLESS_AMOUNT_OF_TIME);
             }
 
-            @Track(level = Log.INFO)
             private void sleepyMethod(long milliseconds) {
                 SystemClock.sleep(milliseconds);
             }

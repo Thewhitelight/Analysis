@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
-apply plugin: 'analysis-track'
+apply plugin: 'analysis-trace'
 
 android {
     compileSdkVersion 28
@@ -24,14 +24,26 @@ android {
         }
     }
 
-//    track {
-//        enabled true
-//    }
-
     productFlavors {
-        dev {}
-        product{}
+        dev {
+            applicationIdSuffix ".devs"
+            versionNameSuffix "-dev"
+        }
+        product {}
     }
+    Trace {
+        /**
+         * 改变值后先clean
+         * */
+
+        enabled true
+        packageName "cn.libery.analysis.sample"
+        logLevel "i"
+        classExcludes = ["cn.libery.analysis.sample.Logger",
+                         "cn.libery.analysis.sample.Logger2"]
+        packageExcludes = ["cn.libery.analysis.sample.test"]
+    }
+
 }
 
 dependencies {
@@ -42,5 +54,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    debugImplementation project(path: ':runtime')
 }

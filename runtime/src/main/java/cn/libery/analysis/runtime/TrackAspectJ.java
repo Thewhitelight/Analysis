@@ -3,12 +3,10 @@ package cn.libery.analysis.runtime;
 import android.os.Looper;
 import android.util.Log;
 import cn.libery.analysis.annotation.Track;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -49,53 +47,53 @@ public class TrackAspectJ {
     public void constructor() {
     }
 
-    /*@Pointcut("!execution(* com.janmart.jianmate.zxing..*.*(..))")
+    @Pointcut("!execution(* com.janmart.jianmate.zxing..*.*(..))")
     public void excludeClass() {
-    }*/
+    }
 
-    @Pointcut("execution(* " + BuildConfig.PACKAGE_NAME + "..*.*(..))"/* && excludeClass()"*/)
+    @Pointcut("execution(* " + BuildConfig.PACKAGE_NAME + "..*.*(..)) && excludeClass()")
     public void allTargetMethod() {
     }
 
-    @Before("allTargetMethod()")
-    public void beforeLogAndExecute(JoinPoint joinPoint) {
-        if (joinPoint != null) {
-            Signature signature = joinPoint.getSignature();
-            int lineNumber = 0;
-            SourceLocation sourceLocation = joinPoint.getSourceLocation();
-            if (sourceLocation != null) {
-                lineNumber = sourceLocation.getLine() - 1;
-            }
-            if (lineNumber == 0) {
-                return;
-            }
-            if (signature instanceof CodeSignature) {
-                CodeSignature codeSignature = (CodeSignature) signature;
-                Class<?> cls = signature.getDeclaringType();
-                String methodName = signature.getName();
+    @Around("allTargetMethod()")
+    public Object aroundLogAndExecute(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object result = joinPoint.proceed();
 
-                String[] parameterNames = codeSignature.getParameterNames();
-                Object[] parameterValues = joinPoint.getArgs();
-
-                StringBuilder builder = new StringBuilder();
-                builder.append(methodName).append('(');
-                for (int i = 0; i < parameterValues.length; i++) {
-                    if (i > 0) {
-                        builder.append(", ");
-                    }
-                    builder.append(parameterNames[i]).append('=');
-                    builder.append(Strings.toString(parameterValues[i]));
-                }
-                builder.append(')');
-
-                if (Looper.myLooper() != Looper.getMainLooper()) {
-                    builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
-                }
-
-                Log.d("Track " + lineNumber + " " + asTag(cls) + "-" + methodName, builder.toString());
-            }
+        Signature signature = joinPoint.getSignature();
+        int lineNumber = 0;
+        SourceLocation sourceLocation = joinPoint.getSourceLocation();
+        if (sourceLocation != null) {
+            lineNumber = sourceLocation.getLine() - 1;
         }
+        if (lineNumber <= 0) {
+            return result;
+        }
+        if (signature instanceof CodeSignature) {
+            CodeSignature codeSignature = (CodeSignature) signature;
+            Class<?> cls = signature.getDeclaringType();
+            String methodName = signature.getName();
 
+            String[] parameterNames = codeSignature.getParameterNames();
+            Object[] parameterValues = joinPoint.getArgs();
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(methodName).append('(');
+            for (int i = 0; i < parameterValues.length; i++) {
+                if (i > 0) {
+                    builder.append(", ");
+                }
+                builder.append(parameterNames[i]).append('=');
+                builder.append(Strings.toString(parameterValues[i]));
+            }
+            builder.append(')');
+
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
+            }
+
+            Log.d("Track " + lineNumber + " " + asTag(cls) + "-" + methodName, builder.toString());
+        }
+        return result;
     }
 
     @Around("method() || constructor() || withinActivityOnCreateClass()")

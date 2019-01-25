@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-final class Strings {
+public final class Strings {
 
-    static String toString(Object obj) {
+    public static String toString(Object obj) {
         if (obj == null) {
             return "null";
         }

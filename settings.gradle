@@ -1,1 +1,1 @@
-include ':app', ':track', ':annotation', ':runtime'
+include ':app', ':trace'
