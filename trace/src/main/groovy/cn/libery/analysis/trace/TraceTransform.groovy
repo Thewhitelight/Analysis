@@ -40,7 +40,6 @@ class TraceTransform extends Transform {
         if (!project.Trace.enabled) {
             return
         }
-        println("=== TraceTransform Start ===")
 
         def outputProvider = transformInvocation.outputProvider
 
@@ -56,7 +55,7 @@ class TraceTransform extends Transform {
                 FileUtils.copyDirectory(directoryInput.file, dest)
             }
 
-            //第三方jar
+            //第三方jar 虽然对jar没有操作，但是也要输出到out路径
             input.jarInputs.each { JarInput jarInput ->
                 def jarName = jarInput.name
                 def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
@@ -71,8 +70,6 @@ class TraceTransform extends Transform {
                 FileUtils.copyFile(jarInput.file, dest)
             }
         }
-
-        println("=== TraceTransform End ===")
 
     }
 }

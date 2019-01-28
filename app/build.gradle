@@ -34,13 +34,11 @@ android {
     Trace {
         /**
          * 改变值后先clean
-         * */
-
+         **/
         enabled true
         packageName "cn.libery.analysis.sample"
         logLevel "i"
-        classExcludes = ["cn.libery.analysis.sample.Logger",
-                         "cn.libery.analysis.sample.Logger2"]
+        classExcludes = ["cn.libery.analysis.sample.Logger"]
         packageExcludes = ["cn.libery.analysis.sample.test"]
     }
 

@@ -1,13 +1,11 @@
 package cn.libery.analysis.sample;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import cn.libery.analysis.sample.test.Logger3;
 import cn.libery.analysis.sample.test.Logger4;
@@ -24,6 +22,12 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("TestActivity", "onCreate");
         setContentView(R.layout.activity_main);
         findViewById(R.id.start_main).setOnClickListener(this);
+        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test("233");
+            }
+        });
 
         startSleepyThread();
 
@@ -79,14 +83,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.start_main:
-                AlertDialog.Builder builder = new AlertDialog.Builder(TestActivity.this);
-                builder.setTitle("alert").setPositiveButton("close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.show();
                 test2(2, 3);
                 startActivity(new Intent(TestActivity.this, MainActivity.class));
                 break;

@@ -69,30 +69,7 @@ class TraceInject {
         c.detach()
     }
 
-    private static boolean classExcludes(Project project, String filePath) {
-        boolean isExclude = false
-        for (String target : project.Trace.classExcludes) {
-            if (filePath.contains(target + ".class")) {
-                isExclude = true
-                break
-            }
-        }
-        return isExclude
-    }
-
-    private static boolean packageExcludes(Project project, String filePath) {
-        boolean isExclude = false
-        for (String target : project.Trace.packageExcludes) {
-            if (filePath.contains(target)) {
-                isExclude = true
-                break
-            }
-        }
-        return isExclude
-    }
-
     static void insertTime(String logLevel, String className, CtMethod method) {
-        println("=== ${method.name} InsertTime Start ===")
         try {
             int pos = 1
 
@@ -137,7 +114,6 @@ class TraceInject {
             startInjectSB.append("+")
             startInjectSB.append("\")\"")
             startInjectSB.append(");")
-            println(startInjectSB.toString())
 
             method.insertBefore(startInjectSB.toString())
 
@@ -148,13 +124,33 @@ class TraceInject {
             endInjectSB.append("\"<- \"+className+\" \"+lineNumber+\" \"+methodName+\" \"+")
             endInjectSB.append("java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(endTime - startTime) + \"ms \"+returnObj);")
 
-            println(endInjectSB.toString())
             method.insertAfter(endInjectSB.toString())
 
         } catch (Exception e) {
             e.printStackTrace()
-            return
         }
-        println("=== ${method.name} InsertTime End ===")
     }
+
+    private static boolean classExcludes(Project project, String filePath) {
+        boolean isExclude = false
+        for (String target : project.Trace.classExcludes) {
+            if (filePath.contains(target + ".class")) {
+                isExclude = true
+                break
+            }
+        }
+        return isExclude
+    }
+
+    private static boolean packageExcludes(Project project, String filePath) {
+        boolean isExclude = false
+        for (String target : project.Trace.packageExcludes) {
+            if (filePath.contains(target)) {
+                isExclude = true
+                break
+            }
+        }
+        return isExclude
+    }
+
 }
