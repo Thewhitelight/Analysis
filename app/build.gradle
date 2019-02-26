@@ -31,14 +31,17 @@ android {
         }
         product {}
     }
+
     Trace {
-        /**
-         * 改变值后先clean
-         **/
+        / *
+          * 改变值后先clean
+          */
         enabled true
         packageName "cn.libery.analysis.sample"
         logLevel "i"
-        classExcludes = ["cn.libery.analysis.sample.Logger"]
+        classExcludes = ["cn.libery.analysis.sample.Logger",
+                         "cn.libery.analysis.sample.TestActivity"
+        ]
         packageExcludes = ["cn.libery.analysis.sample.test"]
     }
 

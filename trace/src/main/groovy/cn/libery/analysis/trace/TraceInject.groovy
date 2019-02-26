@@ -14,6 +14,10 @@ class TraceInject {
     static ClassPool POOL = ClassPool.getDefault()
 
     static void injectDirCode(String path, Project project) {
+        if (!project.Trace.enabled) {
+            return
+        }
+        project.Trace.enabled
         POOL.appendClassPath(path)
         POOL.appendClassPath(project.android.bootClasspath[0].toString())
         File dir = new File(path)
@@ -71,7 +75,7 @@ class TraceInject {
 
     static void insertTime(String logLevel, String className, CtMethod method) {
         try {
-            int pos = 1
+            //int pos = 1
 
             CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute()
             LocalVariableAttribute attribute = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag)
@@ -80,8 +84,9 @@ class TraceInject {
             if (attribute == null) {
                 return
             }
+            int pos = Modifier.isStatic(method.getModifiers()) ? 0 : 1
             for (int i = 0; i < size; i++) {
-                paramTypes[i] = method.getParameterTypes()[i].name
+                paramTypes[i] =  attribute.variableName(i + pos)
             }
 
             def stringType = POOL.getCtClass("java.lang.String")

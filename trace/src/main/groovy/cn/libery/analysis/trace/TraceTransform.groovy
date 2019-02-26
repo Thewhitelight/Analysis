@@ -37,9 +37,6 @@ class TraceTransform extends Transform {
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation)
-        if (!project.Trace.enabled) {
-            return
-        }
 
         def outputProvider = transformInvocation.outputProvider
 

@@ -24,7 +24,6 @@ class Trace implements Plugin<Project> {
         } else {
             variants = project.android.libraryVariants
         }
-
         final def log = project.logger
         variants.all { variant ->
             if (!variant.buildType.isDebuggable()) {
